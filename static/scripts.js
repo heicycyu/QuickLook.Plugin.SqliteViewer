@@ -10,7 +10,7 @@ try {
         },
         mounted: function () {
             that = this;
-            var tableNames = JSON.parse(window.external.GetTableNames());
+            var tableNames = JSON.parse(chrome.webview.hostObjects.external.GetTableNames());
             try {
                 if (Object.prototype.toString.call(tableNames) === '[object Array]') {
                     var treeNodes = tableNames.map(function (tableName) {
@@ -63,8 +63,8 @@ try {
             },
             reloadTableData: function (treeNode, index) {
                 that = this;
-                treeNode.total = window.external.GetTableRecordCount(treeNode.name);
-                treeNode.columns = JSON.parse(window.external.GetTableColumns(treeNode.name));
+                treeNode.total = chrome.webview.hostObjects.external.GetTableRecordCount(treeNode.name);
+                treeNode.columns = JSON.parse(chrome.webview.hostObjects.external.GetTableColumns(treeNode.name));
 
                 var sqlQuery = "SELECT * FROM " + treeNode.name + " LIMIT " + treeNode.pageSize;
                 that.renderTableData(sqlQuery, index);
@@ -85,7 +85,7 @@ try {
             getTableData: function (sqlQuery) {
                 that.showLoading();
                 try {
-                    var res = JSON.parse(window.external.LoadTableData(sqlQuery, false));
+                    var res = JSON.parse(chrome.webview.hostObjects.external.LoadTableData(sqlQuery, false));
                     if (res.status && Array.isArray(res.data)) {
                         return res.data;
                     } else {

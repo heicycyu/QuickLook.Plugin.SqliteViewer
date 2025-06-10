@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using QuickLook.Common.Plugin;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
@@ -7,9 +10,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using QuickLook.Common.Plugin;
 
 namespace QuickLook.Plugin.SqliteViewer
 {
@@ -18,7 +18,7 @@ namespace QuickLook.Plugin.SqliteViewer
         public double width = 800;
         public double height = 600;
         public int logLevel = 2;
-        readonly JObject jsonObj;
+        private readonly JObject jsonObj;
 
         public Setting(string file)
         {
@@ -80,7 +80,6 @@ namespace QuickLook.Plugin.SqliteViewer
         {
             return (JArray)jsonObj[key];
         }
-
     }
 
     public class Plugin : IViewer
@@ -102,7 +101,6 @@ namespace QuickLook.Plugin.SqliteViewer
             varInit();
             if (!File.Exists(settingPath))
             {
-
                 Dictionary<string, object> settingMap = new Dictionary<string, object> {
                     { "width",  800},
                     { "height",  600},
@@ -136,7 +134,6 @@ namespace QuickLook.Plugin.SqliteViewer
             logger.Debug($" pluginStaticDir: {pluginStaticDir}");
             logger.Debug($"tmplHtmlFilePath: {tmplHtmlFilePath}");
             logger.Debug($"    htmlFilePath: {htmlFilePath}");
-
         }
 
         public void varInit()
@@ -200,10 +197,14 @@ namespace QuickLook.Plugin.SqliteViewer
             context.IsBusy = false;
         }
 
-        public WebBrowser GetViewerContent(string filePath)
+        public FrameworkElement GetViewerContent(string filePath)
         {
             // 创建 WebBrowser 控件
+#if false
             var webBrowser = new WebBrowser
+#else
+            var webBrowser = new WebpagePanel
+#endif
             {
                 Margin = new Thickness(10),
                 MinHeight = 300,
@@ -219,6 +220,7 @@ namespace QuickLook.Plugin.SqliteViewer
         }
     }
 
+    [ClassInterface(ClassInterfaceType.AutoDual)]
     [ComVisible(true)]
     public class ScriptHandler
     {
@@ -257,10 +259,8 @@ namespace QuickLook.Plugin.SqliteViewer
                 };
                 Logger.Instance.Error($"加载表数据失败: {ex.Message}");
                 return JsonConvert.SerializeObject(result, Formatting.Indented);
-
             }
         }
-
 
         public string LoadTableData(string input, bool isTableName)
         {
@@ -299,7 +299,6 @@ namespace QuickLook.Plugin.SqliteViewer
                 };
                 Logger.Instance.Error($"加载表数据失败: {ex.Message}");
                 return JsonConvert.SerializeObject(result, Formatting.Indented);
-
             }
         }
 
